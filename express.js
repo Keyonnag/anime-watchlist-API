@@ -1,7 +1,7 @@
 const express = require('express');
 const client = require('./pg');
 const cors = require('cors');
-const fetch = require('node-fetch');
+const https = require('https');
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -13,26 +13,36 @@ const url = process.env.DATABASE_URL;
 app.use(express.json());
 app.use(cors());
 
-app.get('/getRandomAnime', async (req, res) => {
-	try {
-		const url = 'https://api.jikan.moe/v4/random/anime';
-		const response = await fetch(url);
-		const data = await response.json();
-		const animeDataList = {
-			title: data.data.title,
-			image_url: data.data.images.jpg.image_url,
-			airing: data.data.airing,
-			synopsis: data.data.synopsis,
-			episodes: data.data.episodes,
-			score: data.data.score,
-			review: '',
-		};
-		res.json(animeDataList);
-	} catch (error) {
-		console.error(`Error getting random anime: ${error.message}`);
-		res.status(500).json({ message: 'An error occurred' });
-	}
+app.get('/getRandomAnime', (req, res) => {
+	const url = 'https://api.jikan.moe/v4/random/anime';
+	https
+		.get(url, (response) => {
+			let data = '';
+
+			response.on('data', (chunk) => {
+				data += chunk;
+			});
+
+			response.on('end', () => {
+				const animeData = JSON.parse(data);
+				const animeDataList = {
+					title: animeData.data.title,
+					image_url: animeData.data.images.jpg.image_url,
+					airing: animeData.data.airing,
+					synopsis: animeData.data.synopsis,
+					episodes: animeData.data.episodes,
+					score: animeData.data.score,
+					review: '',
+				};
+				res.json(animeDataList);
+			});
+		})
+		.on('error', (error) => {
+			console.error(`Error getting random anime: ${error.message}`);
+			res.status(500).json({ message: 'An error occurred' });
+		});
 });
+
 // GET route to retrieve all anime titles in user's watchlist
 app.get('/watchlist', async (req, res) => {
 	try {
