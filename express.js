@@ -11,7 +11,11 @@ const port = process.env.PORT || 3000;
 const url = process.env.DATABASE_URL;
 
 app.use(express.json());
-app.use(cors());
+app.use(
+	cors({
+		origin: '*',
+	})
+);
 
 app.get('/getRandomAnime', (req, res) => {
 	const url = 'https://api.jikan.moe/v4/random/anime';
