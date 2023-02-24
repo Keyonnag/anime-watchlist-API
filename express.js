@@ -1,6 +1,7 @@
 const express = require('express');
 const client = require('./pg');
 const cors = require('cors');
+const fetch = require('node-fetch');
 
 const dotenv = require('dotenv');
 dotenv.config();
