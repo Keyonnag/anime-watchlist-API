@@ -1,5 +1,6 @@
 const express = require('express');
 const client = require('./pg');
+const cors = require('cors');
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -9,15 +10,7 @@ const port = process.env.PORT || 3000;
 const url = process.env.DATABASE_URL;
 
 app.use(express.json());
-
-app.use(function (req, res, next) {
-	res.header('Access-Control-Allow-Origin', '*');
-	res.header(
-		'Access-Control-Allow-Headers',
-		'Origin, X-Requested-With, Content-Type, Accept'
-	);
-	next();
-});
+app.use(cors());
 
 app.get('/getRandomAnime', async (req, res) => {
 	try {
