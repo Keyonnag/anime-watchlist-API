@@ -1,5 +1,4 @@
 const express = require('express');
-const http = require('http');
 const client = require('./pg');
 
 const dotenv = require('dotenv');
@@ -20,38 +19,26 @@ app.use(function (req, res, next) {
 	next();
 });
 
-// this route
-app.get('/anime/:query', (req, res) => {
-	const query = req.params.query;
-	const jikanUrl = `https://api.jikan.moe/v3/search/anime?q=${query}`;
-
-	http
-		.get(jikanUrl, (response) => {
-			let data = '';
-
-			response.on('data', (chunk) => {
-				data += chunk;
-			});
-
-			response.on('end', () => {
-				const animeList = JSON.parse(data).results.map((anime) => ({
-					title: anime.title,
-					imageUrl: anime.image_url,
-					airing: anime.airing,
-					synopsis: anime.synopsis,
-					episodes: anime.episodes,
-					startDate: anime.start_date,
-					score: anime.score,
-				}));
-				res.json(animeList);
-			});
-		})
-		.on('error', (error) => {
-			console.error(`Error making HTTP request to Jikan API: ${error.message}`);
-			res.status(500).json({ message: 'An error occurred' });
-		});
+app.get('/getRandomAnime', async (req, res) => {
+	try {
+		const url = 'https://api.jikan.moe/v4/random/anime';
+		const response = await fetch(url);
+		const data = await response.json();
+		const animeDataList = {
+			title: data.data.title,
+			image_url: data.data.images.jpg.image_url,
+			airing: data.data.airing,
+			synopsis: data.data.synopsis,
+			episodes: data.data.episodes,
+			score: data.data.score,
+			review: '',
+		};
+		res.json(animeDataList);
+	} catch (error) {
+		console.error(`Error getting random anime: ${error.message}`);
+		res.status(500).json({ message: 'An error occurred' });
+	}
 });
-
 // GET route to retrieve all anime titles in user's watchlist
 app.get('/watchlist', async (req, res) => {
 	try {
@@ -65,26 +52,11 @@ app.get('/watchlist', async (req, res) => {
 
 // POST route to add a new anime title to user's watchlist
 app.post('/watchlist', async (req, res) => {
-	const {
-		title,
-		image_url,
-		airing,
-		synopsis,
-		episodes,
-		start_date,
-		score,
-		review,
-	} = req.body;
-
-	// Convert start_date from "YYYY-MM-DD" to "Mon DD, YYYY"
-	const formattedStartDate = new Date(start_date).toLocaleDateString('en-US', {
-		year: 'numeric',
-		month: 'short',
-		day: 'numeric',
-	});
+	const { title, image_url, airing, synopsis, episodes, score, review } =
+		req.body;
 
 	const insertQuery =
-		'INSERT INTO watchlist (title, image_url, airing, synopsis, episodes, start_date, score, review) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *';
+		'INSERT INTO watchlist (title, image_url, airing, synopsis, episodes, score, review) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *';
 
 	try {
 		const result = await client.query(insertQuery, [
@@ -93,7 +65,6 @@ app.post('/watchlist', async (req, res) => {
 			airing,
 			synopsis,
 			episodes,
-			formattedStartDate,
 			score,
 			review,
 		]);
@@ -125,25 +96,11 @@ app.get('/watchlist/:id', async (req, res) => {
 // PUT route to update a specific anime title in user's watchlist by ID
 app.put('/watchlist/:id', async (req, res) => {
 	const id = req.params.id;
-	const {
-		title,
-		imageUrl,
-		airing,
-		synopsis,
-		episodes,
-		start_date,
-		score,
-		review,
-	} = req.body;
-
-	const formattedStartDate = new Date(start_date).toLocaleDateString('en-US', {
-		year: 'numeric',
-		month: 'short',
-		day: 'numeric',
-	});
+	const { title, imageUrl, airing, synopsis, episodes, score, review } =
+		req.body;
 
 	const updateQuery =
-		'UPDATE watchlist SET title = $1, image_url = $2, airing = $3, synopsis = $4, episodes = $5, start_date = $6, score = $7, review = $8 WHERE id = $9 RETURNING *';
+		'UPDATE watchlist SET title = $1, image_url = $2, airing = $3, synopsis = $4, episodes = $5, score = $6, review = $7 WHERE id = $8 RETURNING *';
 
 	try {
 		const result = await client.query(updateQuery, [
@@ -152,7 +109,6 @@ app.put('/watchlist/:id', async (req, res) => {
 			airing,
 			synopsis,
 			episodes,
-			formattedStartDate,
 			score,
 			review,
 			id,
