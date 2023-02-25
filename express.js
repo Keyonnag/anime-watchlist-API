@@ -17,33 +17,56 @@ app.use(
 	})
 );
 
-app.get('/getRandomAnime', async (req, res) => {
+app.get('/getRandomAnime', (req, res) => {
 	const url = 'https://api.jikan.moe/v4/random/anime';
 	const animeDataList = [];
 
-	for (let i = 0; i < 20; i++) {
-		try {
-			const response = await fetch(url);
-			const data = await response.json();
+	const getRandomAnimeData = () => {
+		return new Promise((resolve, reject) => {
+			https
+				.get(url, (response) => {
+					let data = '';
 
-			animeDataList.push({
-				title: data.data.title,
-				image_url: data.data.images.jpg.image_url,
-				airing: data.data.airing,
-				synopsis: data.data.synopsis,
-				episodes: data.data.episodes,
-				score: data.data.score,
-				review: '',
-			});
-		} catch (error) {
-			console.error(`Error getting random anime: ${error.message}`);
-			res.status(500).json({ message: 'An error occurred' });
-			return;
-		}
+					response.on('data', (chunk) => {
+						data += chunk;
+					});
+
+					response.on('end', () => {
+						const animeData = JSON.parse(data);
+						const animeDataObject = {
+							title: animeData.data.title,
+							image_url: animeData.data.images.jpg.image_url,
+							airing: animeData.data.airing,
+							synopsis: animeData.data.synopsis,
+							episodes: animeData.data.episodes,
+							score: animeData.data.score,
+							review: '',
+						};
+						resolve(animeDataObject);
+					});
+				})
+				.on('error', (error) => {
+					console.error(`Error getting random anime: ${error.message}`);
+					reject(error);
+				});
+		});
+	};
+
+	const getRandomAnimePromises = [];
+
+	for (let i = 0; i < 20; i++) {
+		getRandomAnimePromises.push(getRandomAnimeData());
 	}
 
-	res.json(animeDataList);
+	Promise.all(getRandomAnimePromises)
+		.then((animeDataObjects) => {
+			res.json(animeDataObjects);
+		})
+		.catch((error) => {
+			res.status(500).json({ message: 'An error occurred' });
+		});
 });
+
 // GET route to retrieve all anime titles in user's watchlist
 app.get('/watchlist', async (req, res) => {
 	try {
