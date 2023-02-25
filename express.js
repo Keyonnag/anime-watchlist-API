@@ -124,7 +124,7 @@ app.get('/watchlist/:id', async (req, res) => {
 // PUT route to update a specific anime title in user's watchlist by ID
 app.put('/watchlist/:id', async (req, res) => {
 	const id = req.params.id;
-	const { title, imageUrl, airing, synopsis, episodes, score, review } =
+	const { title, image_url, airing, synopsis, episodes, score, review } =
 		req.body;
 
 	const updateQuery =
@@ -133,7 +133,7 @@ app.put('/watchlist/:id', async (req, res) => {
 	try {
 		const result = await client.query(updateQuery, [
 			title,
-			imageUrl,
+			image_url,
 			airing,
 			synopsis,
 			episodes,
