@@ -17,36 +17,33 @@ app.use(
 	})
 );
 
-app.get('/getRandomAnime', (req, res) => {
+app.get('/getRandomAnime', async (req, res) => {
 	const url = 'https://api.jikan.moe/v4/random/anime';
-	https
-		.get(url, (response) => {
-			let data = '';
+	const animeDataList = [];
 
-			response.on('data', (chunk) => {
-				data += chunk;
-			});
+	for (let i = 0; i < 20; i++) {
+		try {
+			const response = await fetch(url);
+			const data = await response.json();
 
-			response.on('end', () => {
-				const animeData = JSON.parse(data);
-				const animeDataList = {
-					title: animeData.data.title,
-					image_url: animeData.data.images.jpg.image_url,
-					airing: animeData.data.airing,
-					synopsis: animeData.data.synopsis,
-					episodes: animeData.data.episodes,
-					score: animeData.data.score,
-					review: '',
-				};
-				res.json(animeDataList);
+			animeDataList.push({
+				title: data.data.title,
+				image_url: data.data.images.jpg.image_url,
+				airing: data.data.airing,
+				synopsis: data.data.synopsis,
+				episodes: data.data.episodes,
+				score: data.data.score,
+				review: '',
 			});
-		})
-		.on('error', (error) => {
+		} catch (error) {
 			console.error(`Error getting random anime: ${error.message}`);
 			res.status(500).json({ message: 'An error occurred' });
-		});
-});
+			return;
+		}
+	}
 
+	res.json(animeDataList);
+});
 // GET route to retrieve all anime titles in user's watchlist
 app.get('/watchlist', async (req, res) => {
 	try {
