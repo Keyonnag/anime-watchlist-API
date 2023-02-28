@@ -37,11 +37,11 @@ The app uses the Jikan API to generate the list of animes on the home page. Visi
 
 ## RESTful API Routes
 
-- get ['/getRandomAnime']: Pulls 9 random PG-13 Anime's from Jikan API
-- get ['/watchlist']: Retrieves user's saved animes
-- post['/watchlist']: Add anime to watchlist DB
-- get ['/watchlist:id']: Retrieves an anime from watchlist DB by ID
-- put ['/watchlist:id']: Updates anime by id in watchlist DB
+- get ['/getRandomAnime']: Pulls 9 random PG-13 Anime's from Jikan API.
+- get ['/watchlist']: Retrieves user's saved animes.
+- post['/watchlist']: Add anime to watchlist DB.
+- get ['/watchlist:id']: Retrieves an anime from watchlist DB by ID.
+- put ['/watchlist:id']: Updates anime by id in watchlist DB.
 - delete ['/getRandomAnime:id']: Deletes anime by id from watchlist DB.
 
 ## Future Improvements
