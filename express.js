@@ -1,7 +1,7 @@
 const express = require('express');
 const client = require('./pg');
 const cors = require('cors');
-const https = require('https');
+const axios = require('axios');
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -17,54 +17,31 @@ app.use(
 	})
 );
 
-app.get('/getRandomAnime', (req, res) => {
-	const url = 'https://api.jikan.moe/v4/random/anime';
-	const animeDataList = [];
+app.get('/getRandomAnime', async (req, res) => {
+	try {
+		const apiUrl = 'https://api.jikan.moe/v4/random/anime';
+		const animeDataList = [];
 
-	const getRandomAnimeData = () => {
-		return new Promise((resolve, reject) => {
-			https
-				.get(url, (response) => {
-					let data = '';
+		for (let i = 0; i < 20; i++) {
+			const response = await axios.get(apiUrl);
+			const animeData = response.data.data;
+			const animeDataObject = {
+				title: animeData.title,
+				image_url: animeData.images.jpg.image_url,
+				airing: animeData.airing,
+				synopsis: animeData.synopsis,
+				episodes: animeData.episodes,
+				score: animeData.score,
+				review: '',
+			};
+			animeDataList.push(animeDataObject);
+		}
 
-					response.on('data', (chunk) => {
-						data += chunk;
-					});
-
-					response.on('end', () => {
-						const animeData = JSON.parse(data);
-						const animeDataObject = {
-							title: animeData.data.title,
-							image_url: animeData.data.images.jpg.image_url,
-							airing: animeData.data.airing,
-							synopsis: animeData.data.synopsis,
-							episodes: animeData.data.episodes,
-							score: animeData.data.score,
-							review: '',
-						};
-						resolve(animeDataObject);
-					});
-				})
-				.on('error', (error) => {
-					console.error(`Error getting random anime: ${error.message}`);
-					reject(error);
-				});
-		});
-	};
-
-	const getRandomAnimePromises = [];
-
-	for (let i = 0; i < 20; i++) {
-		getRandomAnimePromises.push(getRandomAnimeData());
+		res.json(animeDataList);
+	} catch (error) {
+		console.error(`Error getting random anime: ${error.message}`);
+		res.status(500).json({ message: 'An error occurred' });
 	}
-
-	Promise.all(getRandomAnimePromises)
-		.then((animeDataObjects) => {
-			res.json(animeDataObjects);
-		})
-		.catch((error) => {
-			res.status(500).json({ message: 'An error occurred' });
-		});
 });
 
 // GET route to retrieve all anime titles in user's watchlist
