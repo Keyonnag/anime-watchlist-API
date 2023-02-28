@@ -27,7 +27,7 @@ app.get('/getRandomAnime', async (req, res) => {
 			const animeData = response.data.data;
 			const animeDataObject = {
 				title: animeData.title,
-				image_url: animeData.images.jpg.small_image_url,
+				image_url: animeData.images.jpg.image_url,
 				airing: animeData.airing,
 				synopsis: animeData.synopsis,
 				episodes: animeData.episodes,
