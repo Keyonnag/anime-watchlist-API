@@ -22,7 +22,7 @@ app.get('/getRandomAnime', async (req, res) => {
 		const apiUrl = 'https://api.jikan.moe/v4/random/anime';
 		const animeDataList = [];
 
-		for (let i = 0; i < 20; i++) {
+		while (animeDataList.length < 20) {
 			const response = await axios.get(apiUrl);
 			const animeData = response.data.data;
 			const animeDataObject = {
@@ -34,8 +34,25 @@ app.get('/getRandomAnime', async (req, res) => {
 				score: animeData.score,
 				review: '',
 			};
-			animeDataList.push(animeDataObject);
+			if (animeData.rating === 'PG-13 - Teens 13 or older') {
+				animeDataList.push(animeDataObject);
+			}
 		}
+
+		// for (let i = 0; i < 20; i++) {
+		// 	const response = await axios.get(apiUrl);
+		// 	const animeData = response.data.data;
+		// 	const animeDataObject = {
+		// 		title: animeData.title,
+		// 		image_url: animeData.images.jpg.image_url,
+		// 		airing: animeData.airing,
+		// 		synopsis: animeData.synopsis,
+		// 		episodes: animeData.episodes,
+		// 		score: animeData.score,
+		// 		review: '',
+		// 	};
+		// 	animeDataList.push(animeDataObject);
+		// }
 
 		res.json(animeDataList);
 	} catch (error) {
