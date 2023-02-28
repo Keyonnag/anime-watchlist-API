@@ -11,4 +11,4 @@ CREATE TABLE watchlist (
   review TEXT
 );
  
--- psql anime-watchlist-dev -f seed.sql
+-- psql anime-watchlist-dev -f seed.sql 

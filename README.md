@@ -1,47 +1,52 @@
-# Anime Watchlist
+# Animuse
 
-Anime Watchlist is a web application for anime enthusiasts to keep track of their favorite anime titles and write personal reviews. Users can search for anime titles using the Jikan API or another anime-related API and add them to their watchlist. They can also create personal reviews of anime titles they have watched, update their reviews, and remove anime titles from their watchlist.
+This is the backend for my Animuse Application. See https://github.com/Keyonnag/anime-watchlist-app-frontend
 
-## Technologies
+Animuse is an anime watchlist app that allows users to keep track of the anime they want to watch or have already watched. This application was built using PostgresSQL, Express, PG, Axios, React, and Bootstrap CDN.
 
-Anime Watchlist is built with the following technologies:
+The app uses Jikan API to display a list of 9 random animes on the home page, filtered by only PG-13 animes to avoid any adult content. Users can generate a new list of 9 animes by clicking on the "More Anime" button. Users can also add an anime to their watchlist by clicking on the "Add to Watchlist" button on an anime card.
 
-- React for the front-end
-- Node.js and Express for the back-end
-- PostgreSQL for the database
+The watchlist page displays all the animes that the user has added to their watchlist. Users can update their review of the anime and also delete an Anime from the watchlist showing full CRUD functionality.
 
-## Features
+## Installation
 
-The following features are implemented in Anime Watchlist:
+To run the application locally, follow these steps:
 
-- Search for anime titles using the Jikan API
-- Add anime titles to a watchlist
-- View anime titles in the watchlist
-- Create personal reviews of anime titles
-- Update personal reviews of anime titles
-- Remove anime titles from the watchlist
+1. Clone the repository to your local machine.
+2. Install the necessary dependencies by running `npm install`.
+3. Create a database in PostgreSQL and update the `.env` file with your database information.
+4. Run the database migration by running `npm run migrate`.
+5. Start the server by running `npm start`.
 
-## Getting Started
+## Dependencies
 
-To get started with Anime Watchlist, you will need to install the following software:
+The following dependencies were used in this project:
 
-- Node.js
-- PostgreSQL
+- Express
+- pg
+- dotenv
+- cors
+- nodemon (devDependency)
+- React (frontend)
+- bootstrap CDN (frontend)
+- axios (frontend)
 
-After installing the required software, you can follow these steps to get started:
+## API
 
-1. Clone the repository to your local machine
-2. Navigate to the project directory in your terminal
-3. Run `npm install` to install the project dependencies
-4. Create a PostgreSQL database for the project
-5. Create a `.env` file in the root of the project and add the following environment variables:
-6. Start the front-end server with the command `npm start`
-7. Open your browser and navigate to `http://localhost:3000` to use the application.
+The app uses the Jikan API to generate the list of animes on the home page. Visit the [Jikan API documentation](https://jikan.moe/docs) to learn more about the API.
 
-## Contributing
+## Future Improvements
 
-Contributions to Anime Watchlist are welcome! If you find a bug or would like to suggest a new feature, please open an issue or submit a pull request.
+- Add user authentication and authorization.
+- Allow users to rate an anime and sort their watchlist by rating.
+- Allow users to search for an anime and add it to their watchlist.
+- Allow users to share their watchlist with friends.
 
-## License
+## Authors
 
-Anime Watchlist is licensed under the [MIT License](https://github.com/<username>/<repository>/blob/main/LICENSE).
+- Keyonna Garfine
+
+## Acknowledgments
+
+- The creators of Jikan API.
+- The creators of PostgresSQL, Express, React, and Bootstrap.
