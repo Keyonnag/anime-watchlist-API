@@ -10,5 +10,5 @@ CREATE TABLE watchlist (
   score DECIMAL(3, 2),
   review TEXT
 );
-
+ 
 -- psql anime-watchlist-dev -f seed.sql
